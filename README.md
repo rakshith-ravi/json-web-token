@@ -1,4 +1,4 @@
-# json-web-token
+# JWT-Parser
 
 JWT encode and decode for Node.js that can use callbacks or by returning an object `{error:, value:}`
 
@@ -17,96 +17,109 @@ JSON Web Token (JWT) is a compact URL-safe means of representing claims to be tr
 
 the version `2.*.*` should work only for NodeJS >= **4** for NodeJS **0.10** and **0.12** should install the version `1.6.3`
 
-### API
+## API
 
-
-##### jwt#encode(key, payload, [algorithm], cb)
+### jwt#encode(key, payload, [algorithm], cb)
 
 * **key**, your secret
 * **payload**, the payload or Claim Names or an object with {payload, header}
 
 *ex:*
+
 ```js
 {
-   "iss": "my_issurer",
-  "aud": "World",
-  "iat": 1400062400223,
-  "typ": "/online/transactionstatus/v2",
-  "request": {
-    "myTransactionId": "[myTransactionId]",
-    "merchantTransactionId": "[merchantTransactionId]",
-    "status": "SUCCESS"
-  }
+     "iss": "my_issurer",
+    "aud": "World",
+    "iat": 1400062400223,
+    "typ": "/online/transactionstatus/v2",
+    "request": {
+        "myTransactionId": "[myTransactionId]",
+        "merchantTransactionId": "[merchantTransactionId]",
+        "status": "SUCCESS"
+    }
 }
 ```
 
-*attention that exists some reserved claim names (like "iss", "iat", etc..) check [in here](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-08#section-4) for more info about JWT Claims.*
+*attention that exists some reserved claim names (like "iss", "iat", etc..) check
+[in here](http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-08#section-4) for 
+more info about JWT Claims.*
+
 * **algorithm**, default to 'sha256', use *jwt#getAlgorithms()* to get the supported algorithms
 * **cb**, the callback(err[name, message], token)
 
-
-#####  jwt#decode(key, token, cb)
+### jwt#decode(key, token, cb)
 
 * **key**, your secret
 * **token**, the JWT token
 * **cb**, the callback(err[name, message], decodedPayload[, decodedHeader])
 
-
-#### Example
+### Example
 
 ```js
 var jwt = require('json-web-token');
 
 var payload = {
-  "iss": "my_issurer",
-  "aud": "World",
-  "iat": 1400062400223,
-  "typ": "/online/transactionstatus/v2",
-  "request": {
-    "myTransactionId": "[myTransactionId]",
-    "merchantTransactionId": "[merchantTransactionId]",
-    "status": "SUCCESS"
-  }
-};
-
-var secret = 'TOPSECRETTTTT';
-
-// encode
-jwt.encode(secret, payload, function (err, token) {
-  if (err) {
-    console.error(err.name, err.message);
-  } else {
-    console.log(token);
-
-    // decode
-    jwt.decode(secret, token, function (err_, decodedPayload, decodedHeader) {
-      if (err) {
-        console.error(err.name, err.message);
-      } else {
-        console.log(decodedPayload, decodedHeader);
-      }
-    });
-  }
-});
-```
-
-**using the optional [reserved headers](http://self-issued.info/docs/draft-jones-json-web-token-01.html#ReservedHeaderParameterName) (alg and typ can't be set using this method)**
-```js
-var settingAddHeaders = {
-  payload: {
     "iss": "my_issurer",
     "aud": "World",
     "iat": 1400062400223,
     "typ": "/online/transactionstatus/v2",
     "request": {
-      "myTransactionId": "[myTransactionId]",
-      "merchantTransactionId": "[merchantTransactionId]",
-      "status": "SUCCESS"
+        "myTransactionId": "[myTransactionId]",
+        "merchantTransactionId": "[merchantTransactionId]",
+        "status": "SUCCESS"
     }
-  },
-  header: {
-    kid: 'key ID'
-  }
+};
+
+var secret = 'TOPSECRETTTTT';
+
+// encode
+jwt.encode(secret, payload, (err, token) => {
+    if (err) {
+        console.error(err.name, err.message);
+    } else {
+        console.log(token);
+    }
+});
+
+// decode
+jwt.decode(secret, token, (err, result) => {
+    if (err) {
+        console.error(err.name, err.message);
+    } else {
+        console.log(result.payload, result.header);
+    }
+});
+
+
+// Use as Promise
+
+// Encode
+let token = await jwt.encode(secret, payload);
+console.log(token);
+
+// Decode
+let result = await jwt.decode(token);
+console.log(result.payload, result.header)
+```
+
+**using the optional [reserved headers](http://self-issued.info/docs/draft-jones-json-web-token-01.html#ReservedHeaderParameterName) (alg and typ can't be set using this method)**
+
+```js
+var settingAddHeaders = {
+    payload: {
+        "iss": "my_issurer",
+        "aud": "World",
+        "iat": 1400062400223,
+        "typ": "/online/transactionstatus/v2",
+        "request": {
+            "myTransactionId": "[myTransactionId]",
+            "merchantTransactionId": "[merchantTransactionId]",
+            "status": "SUCCESS"
+        }
+    },
+    header: {
+        kid: 'key ID'
+    }
 }
 
 jwt.encode(secret, settingAddHeaders, function (err, token) {
@@ -115,47 +128,58 @@ jwt.encode(secret, settingAddHeaders, function (err, token) {
 
 ```
 
-
 ---
 
 #### this projet has been set up with a precommit that forces you to follow a code style, no jshint issues and 100% of code coverage before commit
 
 to run test
+
 ```js
 npm test
 ```
 
 to run jshint
+
 ```js
 npm run lint
 ```
 
 to run code style
+
 ```js
 npm run style
 ```
 
 to run code coverage
+
 ```js
 npm run coverage
 ```
 
 to open the code coverage report
+
 ```js
 npm run coverage:open
 ```
 
 to run benchmarks
+
 ```js
 npm run bench
 ```
 
 to run the source complexity tool
+
 ```js
 npm run complexity
 ```
 
 to open the complexity report
+
 ```js
 npm run complexity:open
 ```
+
+## Credits
+
+All thanks to @joaquimserafim for his work on [json-web-token](https://github.com/joaquimserafim/json-web-token) based on which this project was forked.

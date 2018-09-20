@@ -8,5 +8,5 @@
   - master
  notifications:
   email:
-   - joaquim.serafim@gmail.com
+   - rakshithravi1997@gmail.com
  script: npm test
